@@ -23,10 +23,11 @@ func (s *StubPlayerStore) RecordWin(name string) {
 
 func TestGETPlayers(t *testing.T) {
 	store := StubPlayerStore{
-		scores: map[string]int{
+		map[string]int{
 			"Pepper": 20,
 			"Floyd":  10,
 		},
+		nil,
 	}
 	server := &PlayerServer{&store}
 
@@ -62,7 +63,8 @@ func TestGETPlayers(t *testing.T) {
 
 func TestStoreWins(t *testing.T) {
 	store := StubPlayerStore{
-		scores: map[string]int{},
+		map[string]int{},
+		nil,
 	}
 
 	server := &PlayerServer{&store}
