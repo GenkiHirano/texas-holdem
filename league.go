@@ -18,7 +18,7 @@ func (l League) Find(name string) *Player {
 	return nil
 }
 
-func NewLeague(rdr io.Reader) ([]Player, error) {
+func NewLeague(rdr io.Reader) (League, error) {
 	var league []Player
 
 	err := json.NewDecoder(rdr).Decode(&league)
