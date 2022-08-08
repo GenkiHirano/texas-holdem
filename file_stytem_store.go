@@ -13,7 +13,6 @@ type FileSystemPlayerStore struct {
 }
 
 func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
-
 	err := initialisePlayerDBFile(file)
 
 	if err != nil {
