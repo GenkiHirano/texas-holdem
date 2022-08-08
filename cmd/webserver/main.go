@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	poker "github.com/GenkiHirano/tdd-go.git"
 )
@@ -11,19 +10,16 @@ import (
 const dbFileName = "game.db.json"
 
 func main() {
-	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	store, close, err := poker.FileSystemPlayerStoreFromFile(dbFileName)
 
-	if err != nil {
-		log.Fatalf("problem opening %s %v", dbFileName, err)
-	}
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer close()
 
-	store, err := poker.NewFileSystemPlayerStore(db)
+    server := poker.NewPlayerServer(store)
 
-	if err != nil {
-		log.Fatalf("problem creating file system player store, %v ", err)
-	}
-
-	server := poker.NewPlayerServer(store)
-
-	log.Fatal(http.ListenAndServe(":8080", server))
+    if err := http.ListenAndServe(":8080", server); err != nil {
+        log.Fatalf("could not listen on port 8080 %v", err)
+    }
 }
