@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"strings"
+	"time"
 )
 
 type CLI struct {
@@ -23,11 +24,25 @@ func (c *CLI) PlayPoker() {
 	c.playerStore.RecordWin(extractWinner(userInput))
 }
 
+func (c *CLI) readLine() string {
+	c.in.Scan()
+	return c.in.Text()
+}
+
 func extractWinner(userInput string) string {
 	return strings.Replace(userInput, " wins", "", 1)
 }
 
-func (c *CLI) readLine() string {
-	c.in.Scan()
-	return c.in.Text()
+type SpyBlindAlerter struct {
+	alerts []struct {
+		scheduledAt time.Duration
+		amount      int
+	}
+}
+
+func (s *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
+	s.alerts = append(s.alerts, struct {
+		scheduledAt time.Duration
+		amount      int
+	}{duration, amount})
 }
