@@ -2,6 +2,7 @@ package poker
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -10,18 +11,21 @@ import (
 type CLI struct {
 	playerStore PlayerStore
 	in          *bufio.Scanner
+	out         io.Writer
 	alerter     BlindAlerter
 }
 
-func NewCLI(store PlayerStore, in io.Reader, alerter BlindAlerter) *CLI {
+func NewCLI(store PlayerStore, in io.Reader, out io.Writer, alerter BlindAlerter) *CLI {
 	return &CLI{
 		playerStore: store,
 		in:          bufio.NewScanner(in),
+		out:         out,
 		alerter:     alerter,
 	}
 }
 
 func (c *CLI) PlayPoker() {
+	fmt.Fprint(c.out, "Please enter the number of players: ")
 	c.scheduleBlindAlerts()
 	userInput := c.readLine()
 	c.playerStore.RecordWin(extractWinner(userInput))
