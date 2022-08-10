@@ -24,8 +24,10 @@ func NewCLI(store PlayerStore, in io.Reader, out io.Writer, alerter BlindAlerter
 	}
 }
 
+const PlayerPrompt = "Please enter the number of players: "
+
 func (c *CLI) PlayPoker() {
-	fmt.Fprint(c.out, "Please enter the number of players: ")
+	fmt.Fprint(c.out, PlayerPrompt)
 	c.scheduleBlindAlerts()
 	userInput := c.readLine()
 	c.playerStore.RecordWin(extractWinner(userInput))
