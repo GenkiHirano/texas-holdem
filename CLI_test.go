@@ -31,7 +31,9 @@ func (s *spyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
 }
 
 type GameSpy struct {
+	StartCalled     bool
 	StartedWith  int
+
 	FinishedWith string
 }
 
@@ -76,6 +78,19 @@ func TestCLI(t *testing.T) {
 				got := blindAlerter.alerts[i]
 				assertScheduledAlert(t, got, want)
 			})
+		}
+	})
+
+	t.Run("it prints an error when a non numeric value is entered and does not start the game", func(t *testing.T) {
+		stdout := &bytes.Buffer{}
+		in := strings.NewReader("Pies\n")
+		game := &GameSpy{}
+
+		cli := poker.NewCLI(in, stdout, game)
+		cli.PlayPoker()
+
+		if game.StartCalled {
+			t.Errorf("game should not have started")
 		}
 	})
 }
