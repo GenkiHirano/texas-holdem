@@ -31,8 +31,8 @@ func (s *spyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
 }
 
 type GameSpy struct {
-	StartCalled     bool
-	StartedWith  int
+	StartCalled bool
+	StartedWith int
 
 	FinishedWith string
 }
