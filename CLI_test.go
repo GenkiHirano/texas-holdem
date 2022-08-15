@@ -3,6 +3,7 @@ package poker_test
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"strings"
 	"testing"
 	"time"
@@ -45,6 +46,10 @@ func (g *GameSpy) Finish(winner string) {
 	g.FinishedWith = winner
 }
 
+func userSends(messages ...string) io.Reader {
+	return strings.NewReader(strings.Join(messages, "\n"))
+}
+
 func TestCLI(t *testing.T) {
 	t.Run("it prompts the user to enter the number of players", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
@@ -82,23 +87,15 @@ func TestCLI(t *testing.T) {
 	})
 
 	t.Run("it prints an error when a non numeric value is entered and does not start the game", func(t *testing.T) {
-		stdout := &bytes.Buffer{}
-		in := strings.NewReader("Pies\n")
 		game := &GameSpy{}
+		stdout := &bytes.Buffer{}
+		in := userSends("Pies")
 
 		cli := poker.NewCLI(in, stdout, game)
 		cli.PlayPoker()
 
-		if game.StartCalled {
-			t.Errorf("game should not have started")
-		}
-
-		gotPrompt := stdout.String()
-		wantPrompt := poker.PlayerPrompt + "you're so silly"
-
-		if gotPrompt != wantPrompt {
-			t.Errorf("got %q, want %q", gotPrompt, wantPrompt)
-		}
+		assertGameNotStarted(t, game)
+		assertMessagesSentToUser(t, stdout, poker.PlayerPrompt, poker.BadPlayerInputErrMsg)
 	})
 }
 
@@ -106,5 +103,21 @@ func assertScheduledAlert(t testing.TB, got, want scheduledAlert) {
 	t.Helper()
 	if got != want {
 		t.Errorf("got %d want %d", got, want)
+	}
+}
+
+func assertMessagesSentToUser(t testing.TB, stdout *bytes.Buffer, messages ...string) {
+	t.Helper()
+	want := strings.Join(messages, "")
+	got := stdout.String()
+	if got != want {
+		t.Errorf("got %q sent to stdout but expected %+v", got, messages)
+	}
+}
+
+func assertGameNotStarted(t testing.TB, game *GameSpy) {
+	t.Helper()
+	if game.StartCalled {
+		t.Errorf("game should not have started")
 	}
 }
