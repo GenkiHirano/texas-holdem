@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"text/template"
 )
 
 const jsonContentType = "application/json"
@@ -73,5 +74,12 @@ func (p *PlayerServer) processWin(w http.ResponseWriter, player string) {
 }
 
 func (p *PlayerServer) game(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	tmpl, err := template.ParseFiles("game.html")
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("problem loading template %s", err.Error()), http.StatusInternalServerError)
+		return
+	}
+
+	tmpl.Execute(w, nil)
 }
