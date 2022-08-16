@@ -28,7 +28,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		assertStatus(t, response.Code, http.StatusOK)
+		assertStatus(t, response, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "20")
 	})
 
@@ -38,7 +38,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		assertStatus(t, response.Code, http.StatusOK)
+		assertStatus(t, response, http.StatusOK)
 		assertResponseBody(t, response.Body.String(), "10")
 	})
 
@@ -48,7 +48,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		assertStatus(t, response.Code, http.StatusNotFound)
+		assertStatus(t, response, http.StatusNotFound)
 	})
 
 	t.Run("it records wins on POST", func(t *testing.T) {
@@ -59,7 +59,7 @@ func TestGETPlayers(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		assertStatus(t, response.Code, http.StatusAccepted)
+		assertStatus(t, response, http.StatusAccepted)
 		AssertPlayerWin(t, &store, player)
 	})
 }
@@ -79,7 +79,7 @@ func TestStoreWins(t *testing.T) {
 
 		server.ServeHTTP(response, request)
 
-		assertStatus(t, response.Code, http.StatusAccepted)
+		assertStatus(t, response, http.StatusAccepted)
 
 		if len(store.winCalls) != 1 {
 			t.Errorf("got %d calls to RecordWin want %d", len(store.winCalls), 1)
@@ -104,7 +104,7 @@ func TestLeague(t *testing.T) {
 		server.ServeHTTP(response, request)
 
 		got := getLeagueFromResponse(t, response.Body)
-		assertStatus(t, response.Code, http.StatusOK)
+		assertStatus(t, response, http.StatusOK)
 		assertLeague(t, got, wantedLeague)
 
 		if response.Result().Header.Get("content-type") != "application/json" {
@@ -118,12 +118,12 @@ func TestLeague(t *testing.T) {
 func TestGame(t *testing.T) {
 	t.Run("GET /game returns 200", func(t *testing.T) {
 		server := NewPlayerServer(&StubPlayerStore{})
-		request, _ := http.NewRequest(http.MethodGet, "/game", nil)
+		request := newGameRequest()
 		response := httptest.NewRecorder()
 
 		server.ServeHTTP(response, request)
 
-		assertStatus(t, response.Code, http.StatusOK)
+		assertStatus(t, response, http.StatusOK)
 	})
 }
 
@@ -142,21 +142,15 @@ func newLeagueRequest() *http.Request {
 	return req
 }
 
-func getLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
-	t.Helper()
-	err := json.NewDecoder(body).Decode(&league)
-
-	if err != nil {
-		t.Fatalf("Unable to parse response from server %q into slice of Player, '%v'", body, err)
-	}
-
-	return
+func newGameRequest() *http.Request {
+	request, _ := http.NewRequest(http.MethodGet, "/game", nil)
+	return request
 }
 
-func assertStatus(t testing.TB, got, want int) {
+func assertStatus(t testing.TB, got *httptest.ResponseRecorder, want int) {
 	t.Helper()
-	if got != want {
-		t.Errorf("did not get correct status, got %d, want %d", got, want)
+	if got.Code != want {
+		t.Errorf("did not get correct status, got %d, want %d", got.Code, want)
 	}
 }
 
@@ -193,4 +187,15 @@ func assertNoError(t testing.TB, err error) {
 	if err != nil {
 		t.Fatalf("didn't expect an error but got one, %v", err)
 	}
+}
+
+func getLeagueFromResponse(t testing.TB, body io.Reader) (league []Player) {
+	t.Helper()
+	err := json.NewDecoder(body).Decode(&league)
+
+	if err != nil {
+		t.Fatalf("Unable to parse response from server %q into slice of Player, '%v'", body, err)
+	}
+
+	return
 }
