@@ -130,25 +130,42 @@ func TestGame(t *testing.T) {
 		assertStatus(t, response, http.StatusOK)
 	})
 
-	t.Run("when we get a message over a websocket it is a winner of a game", func(t *testing.T) {
-		store := &StubPlayerStore{}
+	// t.Run("when we get a message over a websocket it is a winner of a game", func(t *testing.T) {
+	// 	store := &StubPlayerStore{}
+	// 	winner := "Ruth"
+	// 	server := httptest.NewServer(mustMakePlayerServer(t, store))
+	// 	defer server.Close()
+
+	// 	wsURL := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws"
+
+	// 	ws := mustDialWS(t, wsURL)
+	// 	defer ws.Close()
+
+	// 	if err := ws.WriteMessage(websocket.TextMessage, []byte(winner)); err != nil {
+	// 		t.Fatalf("could not send message over ws connection %v", err)
+	// 	}
+
+	// 	writeWSMessage(t, ws, winner)
+
+	// 	time.Sleep(10 * time.Millisecond)
+	// 	AssertPlayerWin(t, store, winner)
+	// })
+
+	t.Run("start a game with 3 players and declare Ruth the winner", func(t *testing.T) {
+		game := &poker.GameSpy{}
 		winner := "Ruth"
-		server := httptest.NewServer(mustMakePlayerServer(t, store))
+		server := httptest.NewServer(mustMakePlayerServer(t, dummyPlayerStore, game))
+		ws := mustDialWS(t, "ws"+strings.TrimPrefix(server.URL, "http")+"/ws")
+
 		defer server.Close()
-
-		wsURL := "ws" + strings.TrimPrefix(server.URL, "http") + "/ws"
-
-		ws := mustDialWS(t, wsURL)
 		defer ws.Close()
 
-		if err := ws.WriteMessage(websocket.TextMessage, []byte(winner)); err != nil {
-			t.Fatalf("could not send message over ws connection %v", err)
-		}
-
+		writeWSMessage(t, ws, "3")
 		writeWSMessage(t, ws, winner)
 
 		time.Sleep(10 * time.Millisecond)
-		AssertPlayerWin(t, store, winner)
+		assertGameStartedWith(t, game, 3)
+		assertFinishCalledWith(t, game, winner)
 	})
 }
 
