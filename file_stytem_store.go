@@ -27,7 +27,7 @@ func NewFileSystemPlayerStore(file *os.File) (*FileSystemPlayerStore, error) {
 	}
 
 	return &FileSystemPlayerStore{
-		database: &tape{file},
+		database: &Tape{file},
 		league:   league,
 	}, nil
 }

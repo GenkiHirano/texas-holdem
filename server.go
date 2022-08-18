@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-const jsonContentType = "application/json"
+const JsonContentType = "application/json"
 const htmlTemplatePath = "game.html"
 
 type PlayerStore interface {
@@ -54,7 +54,7 @@ func NewPlayerServer(store PlayerStore) (*PlayerServer, error) {
 }
 
 func (p *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", jsonContentType)
+	w.Header().Set("content-type", JsonContentType)
 	json.NewEncoder(w).Encode(p.store.GetLeague())
 }
 
