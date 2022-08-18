@@ -11,8 +11,11 @@ import (
 	poker "github.com/GenkiHirano/tdd-go.git"
 )
 
-var dummyBlindAlerter = &spyBlindAlerter{}
-var dummyPlayerStore = &poker.StubPlayerStore{}
+var (
+	dummyGame         = &GameSpy{}
+	dummyBlindAlerter = &spyBlindAlerter{}
+	dummyPlayerStore  = &poker.StubPlayerStore{}
+)
 
 type scheduledAlert struct {
 	at     time.Duration
@@ -32,9 +35,10 @@ func (s *spyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int, to
 }
 
 type GameSpy struct {
+	BlindAlert []byte
+
 	StartCalled     bool
 	StartCalledWith int
-	BlindAlert      []byte
 
 	FinishedCalled   bool
 	FinishCalledWith string
