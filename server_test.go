@@ -222,8 +222,8 @@ func getLeagueFromResponse(t testing.TB, body io.Reader) (league []poker.Player)
 	return
 }
 
-func mustMakePlayerServer(t *testing.T, store poker.PlayerStore, game *GameSpy) *poker.PlayerServer {
-	server, err := poker.NewPlayerServer(store, dummyGame)
+func mustMakePlayerServer(t *testing.T, store poker.PlayerStore, game poker.Game) *poker.PlayerServer {
+	server, err := poker.NewPlayerServer(store, game)
 
 	if err != nil {
 		t.Fatal("problem creating player server", err)
