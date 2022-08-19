@@ -11,25 +11,25 @@ import (
 const dbFileName = "game.db.json"
 
 func main() {
-    db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
+	db, err := os.OpenFile(dbFileName, os.O_RDWR|os.O_CREATE, 0666)
 
-    if err != nil {
-        log.Fatalf("problem opening %s %v", dbFileName, err)
-    }
+	if err != nil {
+		log.Fatalf("problem opening %s %v", dbFileName, err)
+	}
 
-    store, err := poker.NewFileSystemPlayerStore(db)
+	store, err := poker.NewFileSystemPlayerStore(db)
 
-    if err != nil {
-        log.Fatalf("problem creating file system player store, %v ", err)
-    }
+	if err != nil {
+		log.Fatalf("problem creating file system player store, %v ", err)
+	}
 
-    game := poker.NewTexasHoldem(poker.BlindAlerterFunc(poker.Alerter), store)
+	game := poker.NewTexasHoldem(poker.BlindAlerterFunc(poker.Alerter), store)
 
-    server, err := poker.NewPlayerServer(store, game)
+	server, err := poker.NewPlayerServer(store, game)
 
-    if err != nil {
-        log.Fatalf("problem creating player server %v", err)
-    }
+	if err != nil {
+		log.Fatalf("problem creating player server %v", err)
+	}
 
 	log.Fatal(http.ListenAndServe(":8080", server))
 }
