@@ -37,6 +37,7 @@ func (s *spyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int, to
 type GameSpy struct {
 	StartCalled     bool
 	StartCalledWith int
+	BlindAlert      []byte
 
 	FinishedCalled   bool
 	FinishCalledWith string
@@ -45,6 +46,7 @@ type GameSpy struct {
 func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
 	g.StartCalled = true
 	g.StartCalledWith = numberOfPlayers
+	out.Write(g.BlindAlert)
 }
 
 func (g *GameSpy) Finish(winner string) {
