@@ -12,7 +12,6 @@ import (
 )
 
 var (
-	dummyGame         = &GameSpy{}
 	dummyBlindAlerter = &spyBlindAlerter{}
 	dummyPlayerStore  = &poker.StubPlayerStore{}
 )

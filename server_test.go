@@ -15,6 +15,11 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var (
+	dummyGame = &GameSpy{}
+	tenMS     = 10 * time.Millisecond
+)
+
 func TestGETPlayers(t *testing.T) {
 	store := poker.StubPlayerStore{
 		map[string]int{
@@ -149,11 +154,7 @@ func TestGame(t *testing.T) {
 		assertGameStartedWith(t, game, 3)
 		assertFinishCalledWith(t, game, winner)
 
-		_, gotBlindAlert, _ := ws.ReadMessage()
-
-		if string(gotBlindAlert) != wantedBlindAlert {
-			t.Errorf("got blind alert %q, want %q", string(gotBlindAlert), wantedBlindAlert)
-		}
+		within(t, tenMS, func() { assertWebsocketGotMsg(t, ws, wantedBlindAlert) })
 	})
 }
 
@@ -219,6 +220,14 @@ func assertNoError(t testing.TB, err error) {
 	}
 }
 
+func assertWebsocketGotMsg(t *testing.T, ws *websocket.Conn, want string) {
+	_, msg, _ := ws.ReadMessage()
+
+	if string(msg) != want {
+		t.Errorf("got blind alert %q, want %q", string(msg), want)
+	}
+}
+
 func getLeagueFromResponse(t testing.TB, body io.Reader) (league []poker.Player) {
 	t.Helper()
 	err := json.NewDecoder(body).Decode(&league)
@@ -254,5 +263,22 @@ func writeWSMessage(t testing.TB, conn *websocket.Conn, message string) {
 	t.Helper()
 	if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 		t.Fatalf("could not send message over ws connection %v", err)
+	}
+}
+
+func within(t testing.TB, d time.Duration, assert func()) {
+	t.Helper()
+
+	done := make(chan struct{}, 1)
+
+	go func() {
+		assert()
+		done <- struct{}{}
+	}()
+
+	select {
+	case <-time.After(d):
+		t.Error("timed out")
+	case <-done:
 	}
 }
