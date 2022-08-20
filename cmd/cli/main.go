@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	poker "github.com/GenkiHirano/tdd-go.git"
+	poker "github.com/GenkiHirano/texas-holdem.git"
 )
 
 const dbFileName = "game.db.json"

@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	poker "github.com/GenkiHirano/tdd-go.git"
+	poker "github.com/GenkiHirano/texas-holdem.git"
 )
 
 func TestTape_Write(t *testing.T) {

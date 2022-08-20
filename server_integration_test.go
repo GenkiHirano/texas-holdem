@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	poker "github.com/GenkiHirano/tdd-go.git"
+	poker "github.com/GenkiHirano/texas-holdem.git"
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {

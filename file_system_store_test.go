@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	poker "github.com/GenkiHirano/tdd-go.git"
+	poker "github.com/GenkiHirano/texas-holdem.git"
 )
 
 func TestFileSystemStore(t *testing.T) {

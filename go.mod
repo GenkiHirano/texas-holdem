@@ -1,4 +1,4 @@
-module github.com/GenkiHirano/tdd-go.git
+module github.com/GenkiHirano/texas-holdem.git
 
 go 1.18
 

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	poker "github.com/GenkiHirano/tdd-go.git"
+	poker "github.com/GenkiHirano/texas-holdem.git"
 	"github.com/gorilla/websocket"
 )
 
